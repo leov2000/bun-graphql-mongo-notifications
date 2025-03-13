@@ -13,7 +13,7 @@ export const typeDefs: string = `
     groupName: String
     payload: String!
     sleep: Boolean!
-    expireAt: Int
+    expireAt: Float
     createdAt: String!
     _id: String!
   }
@@ -38,7 +38,7 @@ export const typeDefs: string = `
     removeGroupMember(user: String!, groupName: String!): Boolean!
     sendGroupNotification(groupName: String!, fromUser: String!, payload: String!, ttl: TTLOptions): Boolean!
     sendNotification(toUser: String!, fromUser: String!, payload: String!, ttl: TTLOptions): Boolean!
-    sleepMessage(notificationID: String!, sleep: Boolean): Boolean!
+    sleepNotification(notificationID: String!, sleep: Boolean): Boolean!
   }
 
   type Query {

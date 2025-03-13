@@ -10,7 +10,7 @@ export const getMongoCollections = (mongoClient: AppMongoClient) => {
 
   const userGroupCollection = mongoClient
     .getDatabase()
-    .collection<UserGroupDocuments>(mongoClient.notificationCollection);
+    .collection<UserGroupDocuments>(mongoClient.userGroupCollection);
 
   return {
     notificationCollection,

@@ -54,7 +54,7 @@ export interface MutationResolvers {
   ) => boolean | Promise<boolean>;
   sendGroupNotification: (
     _parent: unknown,
-    args: { toGroup: string; fromUser: string; payload: string; ttl?: TTLOptions },
+    args: { groupName: string; fromUser: string; payload: string; ttl?: TTLOptions },
     context: ResolverContext,
   ) => boolean | Promise<boolean>;
   sendNotification: (
@@ -62,7 +62,7 @@ export interface MutationResolvers {
     args: { toUser: string; fromUser: string; payload: string; ttl?: TTLOptions },
     context: ResolverContext,
   ) => boolean | Promise<boolean>;
-  sleepMessage: (
+  sleepNotification: (
     _parent: unknown,
     args: { notificationID: string; sleep: boolean },
     context: ResolverContext,

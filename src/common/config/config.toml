@@ -6,9 +6,9 @@ port = 8000
 host = "localhost"
 port = 28017
 dbName = "testDB"
-notificationCollectionName = "notificationCollection"
-groupCollectionName = "userGroupCollection"
-createdAtTTL = "7 days"
+notificationCollectionName = "notificationCollectionDemo"
+groupCollectionName = "userGroupCollectionDemo"
+createdAtTTL = "3 mins"
 
 [altair]
 altairEndpointURL = "/altair"

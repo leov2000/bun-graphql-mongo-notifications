@@ -5,12 +5,15 @@ import { ObjectId } from 'mongodb';
 
 export const resolvers: Resolvers = {
   Query: {
-    getUserNotifications: async (_parent, { user, sleep }, context) => {
+    getUserNotifications: async (_parent, { user, sleep = false }, context) => {
+      console.log(sleep, 'SLEEP VALUE');
       const { notificationCollection } = getMongoCollections(context.mongoClient);
       const query = {
         user,
-        ...(sleep ? { sleep } : {}),
+        ...(sleep === true ? { sleep: true } : { sleep: false }),
       };
+
+      console.log(query, 'query here');
 
       return await notificationCollection.find(query).toArray();
     },
@@ -30,7 +33,7 @@ export const resolvers: Resolvers = {
       const { notificationCollection } = getMongoCollections(context.mongoClient);
       const documentID = new ObjectId();
       const createdAt = documentID.getTimestamp();
-      const expireAt = getExpireAtValue(ttl ?? { days: 7 });
+      const expireAt = getExpireAtValue(ttl ?? { mins: 2 });
 
       const userNotification: Notification = {
         _id: documentID.toString(),
@@ -51,17 +54,17 @@ export const resolvers: Resolvers = {
 
       return true;
     },
-    sendGroupNotification: async (_parent, { toGroup, fromUser, payload, ttl }, context) => {
+    sendGroupNotification: async (_parent, { groupName, fromUser, payload, ttl }, context) => {
       const { notificationCollection, userGroupCollection } = getMongoCollections(
         context.mongoClient,
       );
-      const group = await userGroupCollection.findOne({ groupName: toGroup });
+      const group = await userGroupCollection.findOne({ groupName });
 
       if (!group) {
-        throw Error(`Group ${toGroup} does not exist in userGroupCollection`);
+        throw Error(`Group ${groupName} does not exist in userGroupCollection`);
       }
 
-      const expireAt = getExpireAtValue(ttl ?? { days: 7 });
+      const expireAt = getExpireAtValue(ttl ?? { mins: 2 });
       const createdAt = new Date().toISOString();
       const notifications = group.users.map((user) => {
         const notification: Notification = {
@@ -134,7 +137,7 @@ export const resolvers: Resolvers = {
 
       return true;
     },
-    sleepMessage: async (_parent, { notificationID }, context) => {
+    sleepNotification: async (_parent, { notificationID }, context) => {
       const { notificationCollection } = getMongoCollections(context.mongoClient);
 
       const result = await notificationCollection.updateOne({ _id: notificationID }, [
