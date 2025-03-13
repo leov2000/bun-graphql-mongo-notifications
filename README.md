@@ -135,8 +135,8 @@ mutation {
 ## Items Remaining
 
 ### Todo
-[] Unit test.
-[] Experiment with Yoga pubsub.
-[] Load test websockets functionality - Gatling??.
-[] Add a in memory cache.
-[] Experiment with a read write forward in memory cache.
+- [ ] Unit test.
+- [ ] Experiment with Yoga pubsub.
+- [ ] Load test websockets functionality - Gatling??.
+- [ ] Add a in memory cache.
+- [ ] Experiment with a read write forward in memory cache.
