@@ -48,6 +48,9 @@ Set up your MongoDB connection in the config file located at `src/common/config/
 bun install
 
 bun run dev
+
+#OR
+bun run dev --config "path/to/config/config.toml"
 ```
 
 The GraphQL server will be available at `http://localhost:8000/graphql`.
@@ -56,7 +59,7 @@ The GraphQL server will be available at `http://localhost:8000/graphql`.
 
 Open Altair GraphQL Client and connect to the server endpoint to test the API.
 
-The Altair interface will be available at `http://localhost:8000/altair`.
+The Altair UI Client will be available at `http://localhost:8000/altair`.
 
 ## API Examples
 
