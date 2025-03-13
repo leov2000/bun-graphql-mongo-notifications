@@ -1,0 +1,17 @@
+[server]
+hostname = "localhost"
+port = 8000
+
+[database]
+host = "localhost"
+port = 28017
+dbName = "testDB"
+notificationCollectionName = "notificationCollection"
+groupCollectionName = "userGroupCollection"
+createdAtTTL = "7 days"
+
+[altair]
+altairEndpointURL = "/altair"
+altairBaseURL = '/altair/'
+graphQLEndpointURL = '/graphql'
+graphQLSubscriptionsEndpoint = 'ws://localhost:8000/graphql'
