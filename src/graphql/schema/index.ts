@@ -7,7 +7,7 @@ import { resolvers } from '../resolvers';
 import { mongoClientPlugin } from '../plugins/mongodb-plugin';
 
 export const typeDefs: string = `
-  type Message {
+  type Notification {
     user: String!
     fromUser: String
     groupName: String
@@ -29,7 +29,7 @@ export const typeDefs: string = `
   }
 
   type Subscription {
-    userMessages(user: String!): Message
+    userNotifications(user: String!): Notification
   }
 
   type Mutation {
@@ -42,7 +42,7 @@ export const typeDefs: string = `
   }
 
   type Query {
-    getUserNotifications(user: String!, sleep: Boolean): [Message]!
+    getUserNotifications(user: String!, sleep: Boolean): [Notification]!
     getGroupMembers(groupName: String!): [UserGroup]!
   }
 `;

@@ -26,7 +26,7 @@ export interface QueryResolvers {
 }
 
 export interface SubscriptionResolvers {
-  userMessages: {
+  userNotifications: {
     resolve: (payload: Notification) => Notification;
     subscribe: (
       _parent: unknown,

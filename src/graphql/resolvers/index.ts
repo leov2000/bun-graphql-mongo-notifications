@@ -152,7 +152,7 @@ export const resolvers: Resolvers = {
     },
   },
   Subscription: {
-    userMessages: {
+    userNotifications: {
       resolve: (payload: Notification): Notification => payload,
       subscribe: async function* (_parent, { user }, _) {
         const channel = new BroadcastChannel(`user:${user}`);
@@ -170,13 +170,13 @@ export const resolvers: Resolvers = {
             const message = await new Promise<Notification>((value) => {
               messageResolver = value;
             });
-            console.log(message, 'message from userMessages subscription');
+            console.log(message, 'message from userNotifications subscription');
             yield message;
           }
         } catch (error) {
           console.error(`Subscription error for user ${user}:`, error);
         } finally {
-          console.log('channel closed userMessages');
+          console.log('channel closed userNotifications');
           channel.close();
         }
       },
