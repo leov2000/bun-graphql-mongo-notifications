@@ -6,16 +6,18 @@ import { ObjectId } from 'mongodb';
 export const resolvers: Resolvers = {
   Query: {
     getUserNotifications: async (_parent, { user, sleep = false }, context) => {
-      console.log(sleep, 'SLEEP VALUE');
-      const { notificationCollection } = getMongoCollections(context.mongoClient);
-      const query = {
+      const { userNotificationsCollection } = getMongoCollections(context.mongoClient);
+      let query: Record<string, any> = {
         user,
-        ...(sleep === true ? { sleep: true } : { sleep: false }),
       };
 
-      console.log(query, 'query here');
+      if (sleep) {
+        query.sleep = true;
+      } else {
+        query.sleep = false;
+      }
 
-      return await notificationCollection.find(query).toArray();
+      return await userNotificationsCollection.find(query).toArray();
     },
     getGroupMembers: async (_parent: unknown, { groupName }, context) => {
       const { userGroupCollection } = getMongoCollections(context.mongoClient);
@@ -27,10 +29,22 @@ export const resolvers: Resolvers = {
         return group.users as string[];
       }
     },
+    getGroupNotifications: async (_parent: unknown, { groupName, tags }, context) => {
+      const { userNotificationsCollection } = getMongoCollections(context.mongoClient);
+      let query: Record<string, any> = {
+        groupName,
+      };
+
+      if (tags && tags.length > 0) {
+        query.tags = { $all: tags };
+      }
+
+      return await userNotificationsCollection.find(query).toArray();
+    },
   },
   Mutation: {
     sendNotification: async (_parent, { toUser, fromUser, payload, ttl }, context) => {
-      const { notificationCollection } = getMongoCollections(context.mongoClient);
+      const { userNotificationsCollection } = getMongoCollections(context.mongoClient);
       const documentID = new ObjectId();
       const createdAt = documentID.getTimestamp();
       const expireAt = getExpireAtValue(ttl ?? { mins: 2 });
@@ -45,8 +59,7 @@ export const resolvers: Resolvers = {
         createdAt: createdAt.toISOString(),
       };
 
-      await notificationCollection.insertOne(userNotification);
-
+      await userNotificationsCollection.insertOne(userNotification);
       const channel = new BroadcastChannel(`user:${toUser}`);
 
       channel.postMessage(userNotification);
@@ -54,10 +67,13 @@ export const resolvers: Resolvers = {
 
       return true;
     },
-    sendGroupNotification: async (_parent, { groupName, fromUser, payload, ttl }, context) => {
-      const { notificationCollection, userGroupCollection } = getMongoCollections(
-        context.mongoClient,
-      );
+    sendGroupNotification: async (
+      _parent,
+      { groupName, fromUser, payload, tags, ttl },
+      context,
+    ) => {
+      const { groupNotificationsCollection, userNotificationsCollection, userGroupCollection } =
+        getMongoCollections(context.mongoClient);
       const group = await userGroupCollection.findOne({ groupName });
 
       if (!group) {
@@ -71,21 +87,22 @@ export const resolvers: Resolvers = {
           _id: new ObjectId().toString(),
           user,
           fromUser,
+          groupName,
           payload,
           sleep: false,
           expireAt,
           createdAt,
         };
 
-        const channel = new BroadcastChannel(`user:${user}`);
-        channel.postMessage(notification);
-        channel.close();
+        const userChannel = new BroadcastChannel(`user:${user}`);
+        userChannel.postMessage(notification);
+        userChannel.close();
 
         return notification;
       });
 
       if (notifications.length > 0) {
-        await notificationCollection.bulkWrite(
+        await userNotificationsCollection.bulkWrite(
           notifications.map((notification) => ({
             insertOne: {
               document: notification,
@@ -93,6 +110,31 @@ export const resolvers: Resolvers = {
           })),
         );
       }
+
+      let groupNotification: Notification = {
+        _id: new ObjectId().toString(),
+        fromUser,
+        groupName,
+        payload,
+        expireAt,
+        createdAt,
+      };
+
+      let groupChannel;
+      let channelName;
+
+      if (tags && tags.length > 0) {
+        channelName = `groupName:${groupName},tags:${tags.join(',')}`;
+        groupChannel = new BroadcastChannel(channelName);
+        groupNotification = { ...groupNotification, tags };
+      } else {
+        channelName = `groupName:${groupName}`;
+        groupChannel = new BroadcastChannel(channelName);
+      }
+
+      await groupNotificationsCollection.insertOne(groupNotification);
+      groupChannel.postMessage(groupNotification);
+      groupChannel.close();
 
       return true;
     },
@@ -138,9 +180,9 @@ export const resolvers: Resolvers = {
       return true;
     },
     sleepNotification: async (_parent, { notificationID }, context) => {
-      const { notificationCollection } = getMongoCollections(context.mongoClient);
+      const { userNotificationsCollection } = getMongoCollections(context.mongoClient);
 
-      const result = await notificationCollection.updateOne({ _id: notificationID }, [
+      const result = await userNotificationsCollection.updateOne({ _id: notificationID }, [
         { $set: { sleep: { $not: '$sleep' } } },
       ]);
 
@@ -178,6 +220,45 @@ export const resolvers: Resolvers = {
         } finally {
           console.log('channel closed userNotifications');
           channel.close();
+        }
+      },
+    },
+    groupNotifications: {
+      resolve: (payload: Notification): Notification => payload,
+      subscribe: async function* (_parent, { groupName, tags }, _) {
+        let groupChannel;
+        let channelName;
+
+        if (tags && tags.length > 0) {
+          channelName = `groupName:${groupName},tags:${tags.join(',')}`;
+          groupChannel = new BroadcastChannel(channelName);
+        } else {
+          channelName = `groupName:${groupName}`;
+          groupChannel = new BroadcastChannel(channelName);
+        }
+
+        let messageResolver: ((value: Notification) => void) | null = null;
+
+        groupChannel.onmessage = (event: MessageEvent) => {
+          if (messageResolver) {
+            messageResolver(event.data);
+            messageResolver = null;
+          }
+        };
+
+        try {
+          while (true) {
+            const message = await new Promise<Notification>((value) => {
+              messageResolver = value;
+            });
+            console.log(message, 'message from groupNotifications subscription');
+            yield message;
+          }
+        } catch (error) {
+          console.error(`Subscription error for groupChannel: ${channelName}:`, error);
+        } finally {
+          console.log('channel closed groupNotifications');
+          groupChannel.close();
         }
       },
     },

@@ -17,7 +17,11 @@ export interface QueryResolvers {
     args: { user: string; sleep: boolean },
     context: ResolverContext,
   ) => Notification[] | Promise<Notification[]>;
-
+  getGroupNotifications: (
+    _parent: unknown,
+    args: { groupName: string; tags: string[] },
+    context: ResolverContext,
+  ) => Notification[] | Promise<Notification[]>;
   getGroupMembers: (
     _parent: unknown,
     args: { groupName: string },
@@ -31,6 +35,14 @@ export interface SubscriptionResolvers {
     subscribe: (
       _parent: unknown,
       args: { user: string },
+      context: ResolverContext,
+    ) => AsyncIterator<Notification> | Promise<AsyncIterator<Notification>>;
+  };
+  groupNotifications: {
+    resolve: (payload: Notification) => Notification;
+    subscribe: (
+      _parent: unknown,
+      args: { groupName: string, tags: string[] },
       context: ResolverContext,
     ) => AsyncIterator<Notification> | Promise<AsyncIterator<Notification>>;
   };
@@ -54,7 +66,7 @@ export interface MutationResolvers {
   ) => boolean | Promise<boolean>;
   sendGroupNotification: (
     _parent: unknown,
-    args: { groupName: string; fromUser: string; payload: string; ttl?: TTLOptions },
+    args: { groupName: string; fromUser: string; payload: string; tags?: string[]; ttl?: TTLOptions },
     context: ResolverContext,
   ) => boolean | Promise<boolean>;
   sendNotification: (

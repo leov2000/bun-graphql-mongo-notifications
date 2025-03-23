@@ -11,17 +11,23 @@ export const mongoClientPlugin = async (
     appConfig.database.host,
     appConfig.database.port,
     appConfig.database.dbName,
-    appConfig.database.notificationCollectionName,
-    appConfig.database.groupCollectionName,
+    appConfig.database.groupNotificationsCollection,
+    appConfig.database.userNotificationsCollection,
+    appConfig.database.userGroupCollection,
   );
 
   await mongoClient.connect();
 
-  const notificationCollection = mongoClient
+  const userNotificationsCollection = mongoClient
     .getDatabase()
-    .collection<NotificationDocuments>(mongoClient.notificationCollection);
+    .collection<NotificationDocuments>(mongoClient.userNotificationsCollection);
+  
+  const groupNotificationsCollection = mongoClient
+    .getDatabase()
+    .collection<NotificationDocuments>(mongoClient.userNotificationsCollection);
 
-  await createTTLIndexes(notificationCollection, appConfig.database.createdAtTTL);
+  await createTTLIndexes(userNotificationsCollection, appConfig.database.createdAtTTL);
+  await createTTLIndexes(groupNotificationsCollection, appConfig.database.createdAtTTL);
 
   return {
     onContextBuilding: async ({ extendContext }) => {

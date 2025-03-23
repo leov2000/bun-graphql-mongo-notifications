@@ -8,11 +8,12 @@ import { mongoClientPlugin } from '../plugins/mongodb-plugin';
 
 export const typeDefs: string = `
   type Notification {
-    user: String!
+    user: String
     fromUser: String
     groupName: String
     payload: String!
-    sleep: Boolean!
+    sleep: Boolean
+    tags: [String]
     expireAt: Float
     createdAt: String!
     _id: String!
@@ -30,19 +31,21 @@ export const typeDefs: string = `
 
   type Subscription {
     userNotifications(user: String!): Notification
+    groupNotifications(groupName: String! tags: [String]): Notification
   }
 
   type Mutation {
     addGroupMember(user: String!, groupName: String!): Boolean!
     createGroup(groupName: String!, users: [String]!): Boolean!
     removeGroupMember(user: String!, groupName: String!): Boolean!
-    sendGroupNotification(groupName: String!, fromUser: String!, payload: String!, ttl: TTLOptions): Boolean!
+    sendGroupNotification(groupName: String!, fromUser: String!, payload: String!, tags: [String], ttl: TTLOptions): Boolean!
     sendNotification(toUser: String!, fromUser: String!, payload: String!, ttl: TTLOptions): Boolean!
     sleepNotification(notificationID: String!, sleep: Boolean): Boolean!
   }
 
   type Query {
     getUserNotifications(user: String!, sleep: Boolean): [Notification]!
+    getGroupNotifications(groupName: String!, tags: [String]): [Notification]!
     getGroupMembers(groupName: String!): [UserGroup]!
   }
 `;

@@ -1,10 +1,11 @@
 export type Notification = {
   _id: string;
-  user: string;
+  user?: string;
   fromUser?: string;
   groupName?: string;
   payload: string;
-  sleep: boolean;
+  sleep?: boolean;
+  tags?: string[];
   expireAt: Date;
   createdAt: string;
 };

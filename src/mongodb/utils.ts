@@ -4,16 +4,21 @@ import { TTLOptions } from '../graphql/resolvers/types';
 import parse from 'parse-duration';
 
 export const getMongoCollections = (mongoClient: AppMongoClient) => {
-  const notificationCollection = mongoClient
+  const groupNotificationsCollection = mongoClient
     .getDatabase()
-    .collection<NotificationDocuments>(mongoClient.notificationCollection);
+    .collection<NotificationDocuments>(mongoClient.groupNotificationsCollection);
+
+  const userNotificationsCollection = mongoClient
+    .getDatabase()
+    .collection<NotificationDocuments>(mongoClient.userNotificationsCollection);
 
   const userGroupCollection = mongoClient
     .getDatabase()
     .collection<UserGroupDocuments>(mongoClient.userGroupCollection);
 
   return {
-    notificationCollection,
+    groupNotificationsCollection,
+    userNotificationsCollection,
     userGroupCollection,
   };
 };

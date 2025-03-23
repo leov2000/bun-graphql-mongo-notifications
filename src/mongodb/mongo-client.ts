@@ -3,8 +3,9 @@ import { MongoClient, Db } from 'mongodb';
 export class AppMongoClient {
   mongoHost: string;
   mongoPort: number;
+  groupNotificationsCollection: string;
   userGroupCollection: string;
-  notificationCollection: string;
+  userNotificationsCollection: string;
   dbName: string;
   database: Db | null;
   client: MongoClient | null;
@@ -14,12 +15,14 @@ export class AppMongoClient {
     mongoHost: string,
     mongoPort: number,
     dbName: string,
-    notificationCollection: string,
+    groupNotificationsCollection: string,
+    userNotificationsCollection: string,
     userGroupCollection: string,
   ) {
     this.mongoHost = mongoHost;
     this.mongoPort = mongoPort;
-    this.notificationCollection = notificationCollection;
+    this.groupNotificationsCollection = groupNotificationsCollection;
+    this.userNotificationsCollection = userNotificationsCollection;
     this.userGroupCollection = userGroupCollection;
     this.dbName = dbName;
     this.database = null;

@@ -7,8 +7,9 @@ export interface ApplicationConfig {
     host: string;
     port: number;
     dbName: string;
-    notificationCollectionName: string;
-    groupCollectionName: string;
+    groupNotificationsCollection: string;
+    userNotificationsCollection: string;
+    userGroupCollection: string;
     createdAtTTL: string;
   };
   altair: {
