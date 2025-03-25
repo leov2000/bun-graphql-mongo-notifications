@@ -1,5 +1,5 @@
 import { Notification } from '../schema/types';
-import { Resolvers } from './types';
+import { BroadcastNotification, Resolvers } from './types';
 import { getMongoCollections, getExpireAtValue } from '../../mongodb/utils';
 import { ObjectId } from 'mongodb';
 
@@ -111,7 +111,7 @@ export const resolvers: Resolvers = {
         );
       }
 
-      let groupNotification: Notification = {
+      const groupNotification: Notification = {
         _id: new ObjectId().toString(),
         fromUser,
         groupName,
@@ -120,20 +120,10 @@ export const resolvers: Resolvers = {
         createdAt,
       };
 
-      let groupChannel;
-      let channelName;
-
-      if (tags && tags.length > 0) {
-        channelName = `groupName:${groupName},tags:${tags.join(',')}`;
-        groupChannel = new BroadcastChannel(channelName);
-        groupNotification = { ...groupNotification, tags };
-      } else {
-        channelName = `groupName:${groupName}`;
-        groupChannel = new BroadcastChannel(channelName);
-      }
+      const groupChannel = new BroadcastChannel(`groupName:${groupName}`);
 
       await groupNotificationsCollection.insertOne(groupNotification);
-      groupChannel.postMessage(groupNotification);
+      groupChannel.postMessage({ notification: groupNotification, broadcastTags: tags });
       groupChannel.close();
 
       return true;
@@ -226,18 +216,8 @@ export const resolvers: Resolvers = {
     groupNotifications: {
       resolve: (payload: Notification): Notification => payload,
       subscribe: async function* (_parent, { groupName, tags }, _) {
-        let groupChannel;
-        let channelName;
-
-        if (tags && tags.length > 0) {
-          channelName = `groupName:${groupName},tags:${tags.join(',')}`;
-          groupChannel = new BroadcastChannel(channelName);
-        } else {
-          channelName = `groupName:${groupName}`;
-          groupChannel = new BroadcastChannel(channelName);
-        }
-
-        let messageResolver: ((value: Notification) => void) | null = null;
+        const groupChannel = new BroadcastChannel(`groupName:${groupName}`);
+        let messageResolver: ((value: BroadcastNotification) => void) | null = null;
 
         groupChannel.onmessage = (event: MessageEvent) => {
           if (messageResolver) {
@@ -248,14 +228,24 @@ export const resolvers: Resolvers = {
 
         try {
           while (true) {
-            const message = await new Promise<Notification>((value) => {
-              messageResolver = value;
-            });
-            console.log(message, 'message from groupNotifications subscription');
-            yield message;
+            const message: BroadcastNotification = await new Promise<BroadcastNotification>(
+              (value) => {
+                messageResolver = value;
+              },
+            );
+            const { broadcastTags, notification } = message;
+            if (broadcastTags && broadcastTags.length > 0) {
+              const intersectionSet = new Set(tags).intersection(new Set(broadcastTags));
+              if (intersectionSet.size > 0) {
+                yield notification;
+              }
+              if (!tags && !broadcastTags) {
+                yield notification;
+              }
+            }
           }
         } catch (error) {
-          console.error(`Subscription error for groupChannel: ${channelName}:`, error);
+          console.error(`Subscription error for groupChannel: ${groupName}:`, error);
         } finally {
           console.log('channel closed groupNotifications');
           groupChannel.close();

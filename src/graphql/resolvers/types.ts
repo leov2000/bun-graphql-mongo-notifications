@@ -5,6 +5,11 @@ interface ResolverContext {
   mongoClient: AppMongoClient;
 }
 
+export interface BroadcastNotification {
+  broadcastTags?: string[];
+  notification: Notification;
+}
+
 export interface TTLOptions {
   mins?: number;
   hours?: number;

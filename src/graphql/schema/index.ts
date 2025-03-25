@@ -9,7 +9,7 @@ import { mongoClientPlugin } from '../plugins/mongodb-plugin';
 export const typeDefs: string = `
   type Notification {
     user: String
-    fromUser: String
+    fromUser: String!
     groupName: String
     payload: String!
     sleep: Boolean
