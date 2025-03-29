@@ -2,11 +2,20 @@ import Bun from 'bun';
 import { renderAltairAssets } from '../graphql/altair';
 import { bootstrapYoga, schema } from '../graphql/schema';
 import { createWebsocketHandler } from '../graphql/ws';
-import { parseApplicationConfig } from '../common/utils';
+import { mongoSingletonClient, parseApplicationConfig } from '../common/utils';
+import { initializeGrpcServer } from '../grpc/server';
 
 (async (): Promise<void> => {
   const appConfig = await parseApplicationConfig();
-  const yoga = await bootstrapYoga(appConfig);
+  const mongoClient = mongoSingletonClient(appConfig);
+
+  try {
+    await mongoClient.connect();
+  } catch (error) {
+    console.log(`An exception has occurred while attempting to connect to MongoDB ${error}`);
+  }
+
+  const yoga = await bootstrapYoga(appConfig, mongoClient);
 
   try {
     Bun.serve({
@@ -36,8 +45,15 @@ import { parseApplicationConfig } from '../common/utils';
       GraphQL endpoint: http://${appConfig.server.hostname}:${appConfig.server.port}${appConfig.altair.graphQLEndpointURL}
       Altair GraphQL client: http://${appConfig.server.hostname}:${appConfig.server.port}${appConfig.altair.altairEndpointURL}
     `);
-
   } catch (error) {
-    console.log(`An exception has occurred ${error}`);
-  } 
+    console.log(`An exception has occurred while attempting to start Bun.serve ${error}`);
+  }
+
+  try {
+    await initializeGrpcServer(mongoClient, '8500');
+  } catch (error) {
+    console.log(
+      `An exception has occurred while attempting to start initializeGrpcServer ${error}`,
+    );
+  }
 })();

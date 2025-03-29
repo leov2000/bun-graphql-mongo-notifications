@@ -6,22 +6,12 @@ import { createTTLIndexes } from '../../mongodb/mongo-ttl-indexes';
 
 export const mongoClientPlugin = async (
   appConfig: ApplicationConfig,
+  mongoClient: AppMongoClient,
 ): Promise<Plugin<{ mongoClient: AppMongoClient }>> => {
-  const mongoClient = new AppMongoClient(
-    appConfig.database.host,
-    appConfig.database.port,
-    appConfig.database.dbName,
-    appConfig.database.groupNotificationsCollection,
-    appConfig.database.userNotificationsCollection,
-    appConfig.database.userGroupCollection,
-  );
-
-  await mongoClient.connect();
-
   const userNotificationsCollection = mongoClient
     .getDatabase()
     .collection<NotificationDocuments>(mongoClient.userNotificationsCollection);
-  
+
   const groupNotificationsCollection = mongoClient
     .getDatabase()
     .collection<NotificationDocuments>(mongoClient.userNotificationsCollection);

@@ -5,6 +5,7 @@ import { createYoga, YogaServerInstance } from 'graphql-yoga';
 import { ApplicationConfig } from '../../common/config/types';
 import { resolvers } from '../resolvers';
 import { mongoClientPlugin } from '../plugins/mongodb-plugin';
+import { AppMongoClient } from '../../mongodb/mongo-client';
 
 export const typeDefs: string = `
   type Notification {
@@ -57,10 +58,11 @@ export const schema: GraphQLSchema = makeExecutableSchema({
 
 export const bootstrapYoga = async (
   appConfig: ApplicationConfig,
+  mongoClient: AppMongoClient,
 ): Promise<YogaServerInstance<{}, {}>> => {
   return createYoga({
     schema,
     graphiql: false,
-    plugins: [await mongoClientPlugin(appConfig)],
+    plugins: [await mongoClientPlugin(appConfig, mongoClient)],
   });
 };

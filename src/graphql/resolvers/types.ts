@@ -1,6 +1,12 @@
 import { Notification } from '../schema/types';
 import { AppMongoClient } from '../../mongodb/mongo-client';
 
+type GraphQLNullable<T> = {
+  [P in keyof T]: undefined extends T[P] ? Exclude<T[P], undefined> | null : T[P];
+};
+
+type GraphQLNotification = GraphQLNullable<Notification>;
+
 interface ResolverContext {
   mongoClient: AppMongoClient;
 }
@@ -47,7 +53,7 @@ export interface SubscriptionResolvers {
     resolve: (payload: Notification) => Notification;
     subscribe: (
       _parent: unknown,
-      args: { groupName: string, tags: string[] },
+      args: { groupName: string; tags: string[] },
       context: ResolverContext,
     ) => AsyncIterator<Notification> | Promise<AsyncIterator<Notification>>;
   };
@@ -71,7 +77,13 @@ export interface MutationResolvers {
   ) => boolean | Promise<boolean>;
   sendGroupNotification: (
     _parent: unknown,
-    args: { groupName: string; fromUser: string; payload: string; tags?: string[]; ttl?: TTLOptions },
+    args: {
+      groupName: string;
+      fromUser: string;
+      payload: string;
+      tags?: string[];
+      ttl?: TTLOptions;
+    },
     context: ResolverContext,
   ) => boolean | Promise<boolean>;
   sendNotification: (
