@@ -10,6 +10,7 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.13.1",
     "@grpc/proto-loader": "^0.7.13",
+    "@grpc/reflection": "^1.0.4",
     "altair-static": "^8.1.6",
     "graphql-ws": "^5.16.0",
     "graphql-yoga": "^5.12.1",

@@ -94,7 +94,6 @@ message TTLOptions {
 
 message UserGroup {
   repeated string users = 1;
-  groupName
 }
 
 message NotificationList {
