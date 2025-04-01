@@ -14,7 +14,7 @@ export const mongoClientPlugin = async (
 
   const groupNotificationsCollection = mongoClient
     .getDatabase()
-    .collection<NotificationDocuments>(mongoClient.userNotificationsCollection);
+    .collection<NotificationDocuments>(mongoClient.groupNotificationsCollection);
 
   await createTTLIndexes(userNotificationsCollection, appConfig.database.createdAtTTL);
   await createTTLIndexes(groupNotificationsCollection, appConfig.database.createdAtTTL);

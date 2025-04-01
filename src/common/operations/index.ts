@@ -163,6 +163,12 @@ export const mongoSendGroupNotification = async (
     createdAt,
   };
 
+  if (tags && tags.length > 0) {
+    groupNotification.tags = tags;
+  } else {
+    groupNotification.tags = [];
+  }
+
   const groupChannel = new BroadcastChannel(`groupName:${groupName}`);
 
   await groupNotificationsCollection.insertOne(groupNotification);
