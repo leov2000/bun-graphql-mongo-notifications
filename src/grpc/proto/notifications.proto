@@ -19,7 +19,6 @@ service NotificationService {
   rpc SubscribeToGroupNotifications (GroupNotificationsRequest) returns (stream Notification);
 }
 
-// Request/Response message types
 message GetUserNotificationsRequest {
   string user = 1;
   bool sleep = 2;
@@ -73,7 +72,6 @@ message GroupNotificationsRequest {
   repeated string tags = 2;
 }
 
-// Data types
 message Notification {
   string id = 1 [json_name = "_id"];
   google.protobuf.StringValue user = 2;

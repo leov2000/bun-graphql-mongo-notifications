@@ -189,7 +189,6 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
     sleepNotification: async (call, callback) => {
       try {
         const { notificationId } = call.request;
-
         const success = await mongoSleepNotification(notificationId, mongoClient);
 
         callback(null, {
@@ -245,26 +244,30 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
     subscribeToGroupNotifications: (call) => {
       try {
         const { groupName, tags = [] } = call.request;
-        let channelName;
+        const groupChannel = new BroadcastChannel(`groupName:${groupName}`);
 
-        if (tags && tags.length > 0) {
-          channelName = `groupName:${groupName},tags:${tags.join(',')}`;
-        } else {
-          channelName = `groupName:${groupName}`;
-        }
-
-        const groupChannel = new BroadcastChannel(channelName);
-
-        groupChannel.onmessage = (event) => {
+        groupChannel.onmessage = (event: MessageEvent) => {
           try {
-            call.write(event.data);
+            const { broadcastTags, notification } = event.data;
+
+            if (broadcastTags && broadcastTags.length > 0) {
+              const intersectionSet = new Set(tags).intersection(new Set(broadcastTags));
+              notification.tags = broadcastTags;
+
+              if (intersectionSet.size > 0) {
+                call.write(notification);
+              }
+              if (!tags && !broadcastTags) {
+                call.write(notification);
+              }
+            }
           } catch (error) {
             console.error(`Error writing to stream for group ${groupName}:`, error);
           }
         };
 
         call.on('cancelled', () => {
-          console.log(`Group notification subscription cancelled for ${channelName}`);
+          console.log(`Group notification subscription cancelled for ${groupName}`);
           groupChannel.close();
         });
 
@@ -274,7 +277,7 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
         });
 
         call.on('end', () => {
-          console.log(`Group notification subscription ended for ${channelName}`);
+          console.log(`Group notification subscription ended for ${groupName}`);
           groupChannel.close();
         });
       } catch (error) {

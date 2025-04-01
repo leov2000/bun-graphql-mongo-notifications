@@ -10,21 +10,30 @@ export const mongoGetGroupNotifications = async (
   tags: string[],
   mongoClient: AppMongoClient,
 ) => {
-  const { userNotificationsCollection } = getMongoCollections(mongoClient);
+  const { groupNotificationsCollection } = getMongoCollections(mongoClient);
   let query: Record<string, any> = {
     groupName,
   };
 
   if (tags && tags.length > 0) {
-    query.tags = { $all: tags };
+    query.tags = { $in: tags };
   }
 
-  return await userNotificationsCollection.find(query).toArray();
+  return await groupNotificationsCollection
+    .aggregate([
+      { $match: query },
+      {
+        $addFields: {
+          tags: { $ifNull: ['$tags', []] },
+        },
+      },
+    ])
+    .toArray();
 };
 
 export const mongoGetUserNotifications = async (
   user: string,
-  sleep: boolean = false,
+  sleep: boolean,
   mongoClient: AppMongoClient,
 ) => {
   const { userNotificationsCollection } = getMongoCollections(mongoClient);
@@ -37,8 +46,16 @@ export const mongoGetUserNotifications = async (
   } else {
     query.sleep = false;
   }
-
-  return await userNotificationsCollection.find(query).toArray();
+  return await userNotificationsCollection
+    .aggregate([
+      { $match: query },
+      {
+        $addFields: {
+          tags: { $ifNull: ['$tags', []] },
+        },
+      },
+    ])
+    .toArray();
 };
 
 export const mongoGetGroupMembers = async (groupName: string, mongoClient: AppMongoClient) => {
@@ -77,6 +94,7 @@ export const mongoSendNotification = async (
   await userNotificationsCollection.insertOne(userNotification);
   const channel = new BroadcastChannel(`user:${toUser}`);
 
+  userNotification.tags = [];
   channel.postMessage(userNotification);
   channel.close();
 
@@ -93,7 +111,7 @@ export const mongoSendGroupNotification = async (
 ) => {
   const { groupNotificationsCollection, userNotificationsCollection, userGroupCollection } =
     getMongoCollections(mongoClient);
-  const group = await userGroupCollection.findOne({ groupName }) as Record<'users', string[]>
+  const group = (await userGroupCollection.findOne({ groupName })) as Record<'users', string[]>;
 
   if (!group) {
     throw Error(`Group ${groupName} does not exist in userGroupCollection`);
@@ -112,6 +130,12 @@ export const mongoSendGroupNotification = async (
       expireAt,
       createdAt,
     };
+
+    if (tags && tags.length > 0) {
+      notification.tags = tags;
+    } else {
+      notification.tags = [];
+    }
 
     const userChannel = new BroadcastChannel(`user:${user}`);
     userChannel.postMessage(notification);
@@ -234,7 +258,6 @@ export async function* userNotifications(user: string) {
       const message = await new Promise<Notification>((value) => {
         messageResolver = value;
       });
-      console.log(message, 'message from userNotifications subscription');
       yield message;
     }
   } catch (error) {
@@ -262,8 +285,10 @@ export async function* groupNotifications(groupName: string, tags: string[]) {
         messageResolver = value;
       });
       const { broadcastTags, notification } = message;
+
       if (broadcastTags && broadcastTags.length > 0) {
         const intersectionSet = new Set(tags).intersection(new Set(broadcastTags));
+
         if (intersectionSet.size > 0) {
           yield notification;
         }

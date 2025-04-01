@@ -9,7 +9,7 @@ dbName = "testDB"
 userGroupCollection = "userGroup"
 userNotificationsCollection = "userNotifications"
 groupNotificationsCollection = "groupNotifications"
-createdAtTTL = "3 mins"
+createdAtTTL = "10 mins"
 
 [altair]
 altairEndpointURL = "/altair"
