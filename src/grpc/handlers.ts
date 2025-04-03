@@ -37,9 +37,8 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
       try {
         const { groupName } = call.request;
         const result = await mongoGetGroupMembers(groupName, mongoClient);
-        const userGroups = [{ users: result }];
 
-        callback(null, { userGroups });
+        callback(null, { users: result });
       } catch (error) {
         callback({
           code: grpc.status.INTERNAL,
@@ -69,19 +68,10 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
     sendNotification: async (call, callback) => {
       try {
         const { toUser, fromUser, payload, ttl } = call.request;
-        const ttlOptions = ttl
-          ? {
-              mins: ttl.mins,
-              hours: ttl.hours,
-              days: ttl.days,
-            }
-          : undefined;
-
-        const success = await mongoSendNotification(toUser, fromUser, payload, ttl, mongoClient);
+        const result = await mongoSendNotification(toUser, fromUser, payload, ttl, mongoClient);
 
         callback(null, {
-          success,
-          message: success ? 'Notification sent successfully' : 'Failed to send notification',
+          result,
         });
       } catch (error) {
         callback({
@@ -94,16 +84,7 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
     sendGroupNotification: async (call, callback) => {
       try {
         const { groupName, fromUser, payload, tags = [], ttl } = call.request;
-
-        const ttlOptions = ttl
-          ? {
-              mins: ttl.mins,
-              hours: ttl.hours,
-              days: ttl.days,
-            }
-          : undefined;
-
-        const success = await mongoSendGroupNotification(
+        const result = await mongoSendGroupNotification(
           groupName,
           fromUser,
           payload,
@@ -113,10 +94,7 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
         );
 
         callback(null, {
-          success,
-          message: success
-            ? 'Group notification sent successfully'
-            : 'Failed to send group notification',
+          result,
         });
       } catch (error) {
         callback({
@@ -129,14 +107,10 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
     addGroupMember: async (call, callback) => {
       try {
         const { user, groupName } = call.request;
-
-        const success = await mongoAddGroupMember(user, groupName, mongoClient);
+        const result = await mongoAddGroupMember(user, groupName, mongoClient);
 
         callback(null, {
-          success,
-          message: success
-            ? `User ${user} added to group ${groupName}`
-            : `Failed to add user ${user} to group ${groupName}`,
+          result,
         });
       } catch (error) {
         callback({
@@ -149,14 +123,10 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
     createGroup: async (call, callback) => {
       try {
         const { users, groupName } = call.request;
-
-        const success = await mongoCreateGroup(users, groupName, mongoClient);
+        const result = await mongoCreateGroup(users, groupName, mongoClient);
 
         callback(null, {
-          success,
-          message: success
-            ? `Group ${groupName} created successfully`
-            : `Failed to create group ${groupName}`,
+          result,
         });
       } catch (error) {
         callback({
@@ -169,14 +139,10 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
     removeGroupMember: async (call, callback) => {
       try {
         const { user, groupName } = call.request;
-
-        const success = await mongoRemoveGroupMember(user, groupName, mongoClient);
+        const result = await mongoRemoveGroupMember(user, groupName, mongoClient);
 
         callback(null, {
-          success,
-          message: success
-            ? `User ${user} removed from group ${groupName}`
-            : `Failed to remove user ${user} from group ${groupName}`,
+          result,
         });
       } catch (error) {
         callback({
@@ -188,14 +154,11 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
 
     sleepNotification: async (call, callback) => {
       try {
-        const { notificationId } = call.request;
-        const success = await mongoSleepNotification(notificationId, mongoClient);
+        const { notificationID } = call.request;
+        const result = await mongoSleepNotification(notificationID, mongoClient);
 
         callback(null, {
-          success,
-          message: success
-            ? `Notification ${notificationId} updated successfully`
-            : `Failed to update notification ${notificationId}`,
+          result,
         });
       } catch (error) {
         callback({

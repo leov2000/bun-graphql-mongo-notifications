@@ -28,7 +28,7 @@ export const mongoGetGroupNotifications = async (
         },
       },
     ])
-    .toArray();
+    .toArray() as Notification[]
 };
 
 export const mongoGetUserNotifications = async (
@@ -55,7 +55,7 @@ export const mongoGetUserNotifications = async (
         },
       },
     ])
-    .toArray();
+    .toArray() as Notification[]
 };
 
 export const mongoGetGroupMembers = async (groupName: string, mongoClient: AppMongoClient) => {

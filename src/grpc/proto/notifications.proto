@@ -1,19 +1,17 @@
 syntax = "proto3";
-
 package notification;
 import "google/protobuf/wrappers.proto";
-
 service NotificationService {
-  rpc GetUserNotifications (GetUserNotificationsRequest) returns (NotificationList);
-  rpc GetGroupMembers (GetGroupMembersRequest) returns (UserGroupList);
-  rpc GetGroupNotifications (GetGroupNotificationsRequest) returns (NotificationList);
+  rpc GetUserNotifications (GetUserNotificationsRequest) returns (getUserNotifications);
+  rpc GetGroupMembers (GetGroupMembersRequest) returns (getGroupMembers);
+  rpc GetGroupNotifications (GetGroupNotificationsRequest) returns (getGroupNotifications);
   
-  rpc SendNotification (SendNotificationRequest) returns (BoolResponse);
-  rpc SendGroupNotification (SendGroupNotificationRequest) returns (BoolResponse);
-  rpc AddGroupMember (GroupMemberRequest) returns (BoolResponse);
-  rpc CreateGroup (CreateGroupRequest) returns (BoolResponse);
-  rpc RemoveGroupMember (GroupMemberRequest) returns (BoolResponse);
-  rpc SleepNotification (SleepNotificationRequest) returns (BoolResponse);
+  rpc SendNotification (SendNotificationRequest) returns (sendNotification);
+  rpc SendGroupNotification (SendGroupNotificationRequest) returns (sendGroupNotification);
+  rpc AddGroupMember (GroupMemberRequest) returns (addGroupMember);
+  rpc CreateGroup (CreateGroupRequest) returns (createGroup);
+  rpc RemoveGroupMember (GroupMemberRequest) returns (removeGroupMember);
+  rpc SleepNotification (SleepNotificationRequest) returns (sleepNotification);
 
   rpc SubscribeToUserNotifications (UserRequest) returns (stream Notification);
   rpc SubscribeToGroupNotifications (GroupNotificationsRequest) returns (stream Notification);
@@ -23,86 +21,91 @@ message GetUserNotificationsRequest {
   string user = 1;
   bool sleep = 2;
 }
-
 message GetGroupMembersRequest {
-  string group_name = 1;
+  string groupName = 1;
 }
-
 message GetGroupNotificationsRequest {
-  string group_name = 1;
+  string groupName = 1;
   repeated string tags = 2;
 }
-
 message SendNotificationRequest {
-  string to_user = 1;
-  string from_user = 2;
+  string toUser = 1;
+  string fromUser = 2;
   string payload = 3;
   TTLOptions ttl = 4;
 }
-
 message SendGroupNotificationRequest {
-  string group_name = 1;
-  string from_user = 2;
+  string groupName = 1;
+  string fromUser = 2;
   string payload = 3;
   repeated string tags = 4;
   TTLOptions ttl = 5;
 }
-
 message GroupMemberRequest {
   string user = 1;
-  string group_name = 2;
+  string groupName = 2;
 }
-
 message CreateGroupRequest {
-  repeated string users = 1;
-  string group_name = 2;
+  string groupName = 1;
+  repeated string users = 2;
 }
-
 message SleepNotificationRequest {
-  string notification_id = 1;
+  string notificationID = 1;
   bool sleep = 2;
 }
-
 message UserRequest {
   string user = 1;
 }
-
 message GroupNotificationsRequest {
-  string group_name = 1;
+  string groupName = 1;
   repeated string tags = 2;
+}
+
+message getUserNotifications {
+  repeated Notification notifications = 1;
+}
+message getGroupMembers {
+  repeated string users = 1;
+}
+message getGroupNotifications {
+  repeated Notification notifications = 1;
+}
+
+message sendNotification {
+  bool result = 1;
+}
+message sendGroupNotification {
+  bool result = 1;
+}
+message addGroupMember {
+  bool result = 1;
+}
+message createGroup {
+  bool result = 1;
+}
+message removeGroupMember {
+  bool result = 1;
+}
+message sleepNotification {
+  bool result = 1;
 }
 
 message Notification {
   string id = 1 [json_name = "_id"];
   google.protobuf.StringValue user = 2;
-  string from_user = 3;
-  google.protobuf.StringValue group_name = 4;
+  string fromUser = 3;
+  google.protobuf.StringValue groupName = 4;
   string payload = 5;
   bool sleep = 6;
   repeated string tags = 7;
-  google.protobuf.DoubleValue expire_at = 8;
-  string created_at = 9;
+  google.protobuf.DoubleValue expireAt = 8;
+  string createdAt = 9;
 }
-
 message TTLOptions {
   google.protobuf.Int32Value mins = 1;
   google.protobuf.Int32Value hours = 2;
   google.protobuf.Int32Value days = 3;
 }
-
 message UserGroup {
   repeated string users = 1;
-}
-
-message NotificationList {
-  repeated Notification notifications = 1;
-}
-
-message UserGroupList {
-  repeated UserGroup user_groups = 1;
-}
-
-message BoolResponse {
-  bool success = 1;
-  string message = 2;
 }
