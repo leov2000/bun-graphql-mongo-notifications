@@ -299,7 +299,7 @@ export async function* groupNotifications(groupName: string, tags: string[] = []
           yield notification;
         }
       }
-      if (tags.length === 0 && broadcastTags.length === 0) {
+      if ((tags.length === 0 && broadcastTags.length === 0) || tags.length === 0) {
         yield notification;
       }
     }

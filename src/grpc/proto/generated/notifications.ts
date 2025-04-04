@@ -64,7 +64,7 @@ export interface CreateGroupRequest {
 }
 
 export interface SleepNotificationRequest {
-  notificationID: string;
+  notificationId: string;
   sleep: boolean;
 }
 
@@ -77,39 +77,39 @@ export interface GroupNotificationsRequest {
   tags: string[];
 }
 
-export interface getUserNotifications {
+export interface GetUserNotificationsResponse {
   notifications: Notification[];
 }
 
-export interface getGroupMembers {
+export interface GetGroupMembersResponse {
   users: string[];
 }
 
-export interface getGroupNotifications {
+export interface GetGroupNotificationsResponse {
   notifications: Notification[];
 }
 
-export interface sendNotification {
+export interface SendNotificationResponse {
   result: boolean;
 }
 
-export interface sendGroupNotification {
+export interface SendGroupNotificationResponse {
   result: boolean;
 }
 
-export interface addGroupMember {
+export interface AddGroupMemberResponse {
   result: boolean;
 }
 
-export interface createGroup {
+export interface CreateGroupResponse {
   result: boolean;
 }
 
-export interface removeGroupMember {
+export interface RemoveGroupMemberResponse {
   result: boolean;
 }
 
-export interface sleepNotification {
+export interface SleepNotificationResponse {
   result: boolean;
 }
 
@@ -730,13 +730,13 @@ export const CreateGroupRequest: MessageFns<CreateGroupRequest> = {
 };
 
 function createBaseSleepNotificationRequest(): SleepNotificationRequest {
-  return { notificationID: "", sleep: false };
+  return { notificationId: "", sleep: false };
 }
 
 export const SleepNotificationRequest: MessageFns<SleepNotificationRequest> = {
   encode(message: SleepNotificationRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.notificationID !== "") {
-      writer.uint32(10).string(message.notificationID);
+    if (message.notificationId !== "") {
+      writer.uint32(10).string(message.notificationId);
     }
     if (message.sleep !== false) {
       writer.uint32(16).bool(message.sleep);
@@ -756,7 +756,7 @@ export const SleepNotificationRequest: MessageFns<SleepNotificationRequest> = {
             break;
           }
 
-          message.notificationID = reader.string();
+          message.notificationId = reader.string();
           continue;
         }
         case 2: {
@@ -778,15 +778,15 @@ export const SleepNotificationRequest: MessageFns<SleepNotificationRequest> = {
 
   fromJSON(object: any): SleepNotificationRequest {
     return {
-      notificationID: isSet(object.notificationID) ? globalThis.String(object.notificationID) : "",
+      notificationId: isSet(object.notificationId) ? globalThis.String(object.notificationId) : "",
       sleep: isSet(object.sleep) ? globalThis.Boolean(object.sleep) : false,
     };
   },
 
   toJSON(message: SleepNotificationRequest): unknown {
     const obj: any = {};
-    if (message.notificationID !== "") {
-      obj.notificationID = message.notificationID;
+    if (message.notificationId !== "") {
+      obj.notificationId = message.notificationId;
     }
     if (message.sleep !== false) {
       obj.sleep = message.sleep;
@@ -799,7 +799,7 @@ export const SleepNotificationRequest: MessageFns<SleepNotificationRequest> = {
   },
   fromPartial<I extends Exact<DeepPartial<SleepNotificationRequest>, I>>(object: I): SleepNotificationRequest {
     const message = createBaseSleepNotificationRequest();
-    message.notificationID = object.notificationID ?? "";
+    message.notificationId = object.notificationId ?? "";
     message.sleep = object.sleep ?? false;
     return message;
   },
@@ -939,22 +939,22 @@ export const GroupNotificationsRequest: MessageFns<GroupNotificationsRequest> = 
   },
 };
 
-function createBasegetUserNotifications(): getUserNotifications {
+function createBaseGetUserNotificationsResponse(): GetUserNotificationsResponse {
   return { notifications: [] };
 }
 
-export const getUserNotifications: MessageFns<getUserNotifications> = {
-  encode(message: getUserNotifications, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const GetUserNotificationsResponse: MessageFns<GetUserNotificationsResponse> = {
+  encode(message: GetUserNotificationsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.notifications) {
       Notification.encode(v!, writer.uint32(10).fork()).join();
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): getUserNotifications {
+  decode(input: BinaryReader | Uint8Array, length?: number): GetUserNotificationsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBasegetUserNotifications();
+    const message = createBaseGetUserNotificationsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -975,7 +975,7 @@ export const getUserNotifications: MessageFns<getUserNotifications> = {
     return message;
   },
 
-  fromJSON(object: any): getUserNotifications {
+  fromJSON(object: any): GetUserNotificationsResponse {
     return {
       notifications: globalThis.Array.isArray(object?.notifications)
         ? object.notifications.map((e: any) => Notification.fromJSON(e))
@@ -983,7 +983,7 @@ export const getUserNotifications: MessageFns<getUserNotifications> = {
     };
   },
 
-  toJSON(message: getUserNotifications): unknown {
+  toJSON(message: GetUserNotificationsResponse): unknown {
     const obj: any = {};
     if (message.notifications?.length) {
       obj.notifications = message.notifications.map((e) => Notification.toJSON(e));
@@ -991,32 +991,32 @@ export const getUserNotifications: MessageFns<getUserNotifications> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<getUserNotifications>, I>>(base?: I): getUserNotifications {
-    return getUserNotifications.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<GetUserNotificationsResponse>, I>>(base?: I): GetUserNotificationsResponse {
+    return GetUserNotificationsResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<getUserNotifications>, I>>(object: I): getUserNotifications {
-    const message = createBasegetUserNotifications();
+  fromPartial<I extends Exact<DeepPartial<GetUserNotificationsResponse>, I>>(object: I): GetUserNotificationsResponse {
+    const message = createBaseGetUserNotificationsResponse();
     message.notifications = object.notifications?.map((e) => Notification.fromPartial(e)) || [];
     return message;
   },
 };
 
-function createBasegetGroupMembers(): getGroupMembers {
+function createBaseGetGroupMembersResponse(): GetGroupMembersResponse {
   return { users: [] };
 }
 
-export const getGroupMembers: MessageFns<getGroupMembers> = {
-  encode(message: getGroupMembers, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const GetGroupMembersResponse: MessageFns<GetGroupMembersResponse> = {
+  encode(message: GetGroupMembersResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.users) {
       writer.uint32(10).string(v!);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): getGroupMembers {
+  decode(input: BinaryReader | Uint8Array, length?: number): GetGroupMembersResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBasegetGroupMembers();
+    const message = createBaseGetGroupMembersResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1037,11 +1037,11 @@ export const getGroupMembers: MessageFns<getGroupMembers> = {
     return message;
   },
 
-  fromJSON(object: any): getGroupMembers {
+  fromJSON(object: any): GetGroupMembersResponse {
     return { users: globalThis.Array.isArray(object?.users) ? object.users.map((e: any) => globalThis.String(e)) : [] };
   },
 
-  toJSON(message: getGroupMembers): unknown {
+  toJSON(message: GetGroupMembersResponse): unknown {
     const obj: any = {};
     if (message.users?.length) {
       obj.users = message.users;
@@ -1049,32 +1049,32 @@ export const getGroupMembers: MessageFns<getGroupMembers> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<getGroupMembers>, I>>(base?: I): getGroupMembers {
-    return getGroupMembers.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<GetGroupMembersResponse>, I>>(base?: I): GetGroupMembersResponse {
+    return GetGroupMembersResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<getGroupMembers>, I>>(object: I): getGroupMembers {
-    const message = createBasegetGroupMembers();
+  fromPartial<I extends Exact<DeepPartial<GetGroupMembersResponse>, I>>(object: I): GetGroupMembersResponse {
+    const message = createBaseGetGroupMembersResponse();
     message.users = object.users?.map((e) => e) || [];
     return message;
   },
 };
 
-function createBasegetGroupNotifications(): getGroupNotifications {
+function createBaseGetGroupNotificationsResponse(): GetGroupNotificationsResponse {
   return { notifications: [] };
 }
 
-export const getGroupNotifications: MessageFns<getGroupNotifications> = {
-  encode(message: getGroupNotifications, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const GetGroupNotificationsResponse: MessageFns<GetGroupNotificationsResponse> = {
+  encode(message: GetGroupNotificationsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.notifications) {
       Notification.encode(v!, writer.uint32(10).fork()).join();
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): getGroupNotifications {
+  decode(input: BinaryReader | Uint8Array, length?: number): GetGroupNotificationsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBasegetGroupNotifications();
+    const message = createBaseGetGroupNotificationsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1095,7 +1095,7 @@ export const getGroupNotifications: MessageFns<getGroupNotifications> = {
     return message;
   },
 
-  fromJSON(object: any): getGroupNotifications {
+  fromJSON(object: any): GetGroupNotificationsResponse {
     return {
       notifications: globalThis.Array.isArray(object?.notifications)
         ? object.notifications.map((e: any) => Notification.fromJSON(e))
@@ -1103,7 +1103,7 @@ export const getGroupNotifications: MessageFns<getGroupNotifications> = {
     };
   },
 
-  toJSON(message: getGroupNotifications): unknown {
+  toJSON(message: GetGroupNotificationsResponse): unknown {
     const obj: any = {};
     if (message.notifications?.length) {
       obj.notifications = message.notifications.map((e) => Notification.toJSON(e));
@@ -1111,32 +1111,34 @@ export const getGroupNotifications: MessageFns<getGroupNotifications> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<getGroupNotifications>, I>>(base?: I): getGroupNotifications {
-    return getGroupNotifications.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<GetGroupNotificationsResponse>, I>>(base?: I): GetGroupNotificationsResponse {
+    return GetGroupNotificationsResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<getGroupNotifications>, I>>(object: I): getGroupNotifications {
-    const message = createBasegetGroupNotifications();
+  fromPartial<I extends Exact<DeepPartial<GetGroupNotificationsResponse>, I>>(
+    object: I,
+  ): GetGroupNotificationsResponse {
+    const message = createBaseGetGroupNotificationsResponse();
     message.notifications = object.notifications?.map((e) => Notification.fromPartial(e)) || [];
     return message;
   },
 };
 
-function createBasesendNotification(): sendNotification {
+function createBaseSendNotificationResponse(): SendNotificationResponse {
   return { result: false };
 }
 
-export const sendNotification: MessageFns<sendNotification> = {
-  encode(message: sendNotification, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const SendNotificationResponse: MessageFns<SendNotificationResponse> = {
+  encode(message: SendNotificationResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.result !== false) {
       writer.uint32(8).bool(message.result);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): sendNotification {
+  decode(input: BinaryReader | Uint8Array, length?: number): SendNotificationResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBasesendNotification();
+    const message = createBaseSendNotificationResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1157,11 +1159,11 @@ export const sendNotification: MessageFns<sendNotification> = {
     return message;
   },
 
-  fromJSON(object: any): sendNotification {
+  fromJSON(object: any): SendNotificationResponse {
     return { result: isSet(object.result) ? globalThis.Boolean(object.result) : false };
   },
 
-  toJSON(message: sendNotification): unknown {
+  toJSON(message: SendNotificationResponse): unknown {
     const obj: any = {};
     if (message.result !== false) {
       obj.result = message.result;
@@ -1169,32 +1171,32 @@ export const sendNotification: MessageFns<sendNotification> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<sendNotification>, I>>(base?: I): sendNotification {
-    return sendNotification.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<SendNotificationResponse>, I>>(base?: I): SendNotificationResponse {
+    return SendNotificationResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<sendNotification>, I>>(object: I): sendNotification {
-    const message = createBasesendNotification();
+  fromPartial<I extends Exact<DeepPartial<SendNotificationResponse>, I>>(object: I): SendNotificationResponse {
+    const message = createBaseSendNotificationResponse();
     message.result = object.result ?? false;
     return message;
   },
 };
 
-function createBasesendGroupNotification(): sendGroupNotification {
+function createBaseSendGroupNotificationResponse(): SendGroupNotificationResponse {
   return { result: false };
 }
 
-export const sendGroupNotification: MessageFns<sendGroupNotification> = {
-  encode(message: sendGroupNotification, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const SendGroupNotificationResponse: MessageFns<SendGroupNotificationResponse> = {
+  encode(message: SendGroupNotificationResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.result !== false) {
       writer.uint32(8).bool(message.result);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): sendGroupNotification {
+  decode(input: BinaryReader | Uint8Array, length?: number): SendGroupNotificationResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBasesendGroupNotification();
+    const message = createBaseSendGroupNotificationResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1215,11 +1217,11 @@ export const sendGroupNotification: MessageFns<sendGroupNotification> = {
     return message;
   },
 
-  fromJSON(object: any): sendGroupNotification {
+  fromJSON(object: any): SendGroupNotificationResponse {
     return { result: isSet(object.result) ? globalThis.Boolean(object.result) : false };
   },
 
-  toJSON(message: sendGroupNotification): unknown {
+  toJSON(message: SendGroupNotificationResponse): unknown {
     const obj: any = {};
     if (message.result !== false) {
       obj.result = message.result;
@@ -1227,32 +1229,34 @@ export const sendGroupNotification: MessageFns<sendGroupNotification> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<sendGroupNotification>, I>>(base?: I): sendGroupNotification {
-    return sendGroupNotification.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<SendGroupNotificationResponse>, I>>(base?: I): SendGroupNotificationResponse {
+    return SendGroupNotificationResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<sendGroupNotification>, I>>(object: I): sendGroupNotification {
-    const message = createBasesendGroupNotification();
+  fromPartial<I extends Exact<DeepPartial<SendGroupNotificationResponse>, I>>(
+    object: I,
+  ): SendGroupNotificationResponse {
+    const message = createBaseSendGroupNotificationResponse();
     message.result = object.result ?? false;
     return message;
   },
 };
 
-function createBaseaddGroupMember(): addGroupMember {
+function createBaseAddGroupMemberResponse(): AddGroupMemberResponse {
   return { result: false };
 }
 
-export const addGroupMember: MessageFns<addGroupMember> = {
-  encode(message: addGroupMember, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const AddGroupMemberResponse: MessageFns<AddGroupMemberResponse> = {
+  encode(message: AddGroupMemberResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.result !== false) {
       writer.uint32(8).bool(message.result);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): addGroupMember {
+  decode(input: BinaryReader | Uint8Array, length?: number): AddGroupMemberResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseaddGroupMember();
+    const message = createBaseAddGroupMemberResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1273,11 +1277,11 @@ export const addGroupMember: MessageFns<addGroupMember> = {
     return message;
   },
 
-  fromJSON(object: any): addGroupMember {
+  fromJSON(object: any): AddGroupMemberResponse {
     return { result: isSet(object.result) ? globalThis.Boolean(object.result) : false };
   },
 
-  toJSON(message: addGroupMember): unknown {
+  toJSON(message: AddGroupMemberResponse): unknown {
     const obj: any = {};
     if (message.result !== false) {
       obj.result = message.result;
@@ -1285,32 +1289,32 @@ export const addGroupMember: MessageFns<addGroupMember> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<addGroupMember>, I>>(base?: I): addGroupMember {
-    return addGroupMember.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<AddGroupMemberResponse>, I>>(base?: I): AddGroupMemberResponse {
+    return AddGroupMemberResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<addGroupMember>, I>>(object: I): addGroupMember {
-    const message = createBaseaddGroupMember();
+  fromPartial<I extends Exact<DeepPartial<AddGroupMemberResponse>, I>>(object: I): AddGroupMemberResponse {
+    const message = createBaseAddGroupMemberResponse();
     message.result = object.result ?? false;
     return message;
   },
 };
 
-function createBasecreateGroup(): createGroup {
+function createBaseCreateGroupResponse(): CreateGroupResponse {
   return { result: false };
 }
 
-export const createGroup: MessageFns<createGroup> = {
-  encode(message: createGroup, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const CreateGroupResponse: MessageFns<CreateGroupResponse> = {
+  encode(message: CreateGroupResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.result !== false) {
       writer.uint32(8).bool(message.result);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): createGroup {
+  decode(input: BinaryReader | Uint8Array, length?: number): CreateGroupResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBasecreateGroup();
+    const message = createBaseCreateGroupResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1331,11 +1335,11 @@ export const createGroup: MessageFns<createGroup> = {
     return message;
   },
 
-  fromJSON(object: any): createGroup {
+  fromJSON(object: any): CreateGroupResponse {
     return { result: isSet(object.result) ? globalThis.Boolean(object.result) : false };
   },
 
-  toJSON(message: createGroup): unknown {
+  toJSON(message: CreateGroupResponse): unknown {
     const obj: any = {};
     if (message.result !== false) {
       obj.result = message.result;
@@ -1343,32 +1347,32 @@ export const createGroup: MessageFns<createGroup> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<createGroup>, I>>(base?: I): createGroup {
-    return createGroup.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<CreateGroupResponse>, I>>(base?: I): CreateGroupResponse {
+    return CreateGroupResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<createGroup>, I>>(object: I): createGroup {
-    const message = createBasecreateGroup();
+  fromPartial<I extends Exact<DeepPartial<CreateGroupResponse>, I>>(object: I): CreateGroupResponse {
+    const message = createBaseCreateGroupResponse();
     message.result = object.result ?? false;
     return message;
   },
 };
 
-function createBaseremoveGroupMember(): removeGroupMember {
+function createBaseRemoveGroupMemberResponse(): RemoveGroupMemberResponse {
   return { result: false };
 }
 
-export const removeGroupMember: MessageFns<removeGroupMember> = {
-  encode(message: removeGroupMember, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const RemoveGroupMemberResponse: MessageFns<RemoveGroupMemberResponse> = {
+  encode(message: RemoveGroupMemberResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.result !== false) {
       writer.uint32(8).bool(message.result);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): removeGroupMember {
+  decode(input: BinaryReader | Uint8Array, length?: number): RemoveGroupMemberResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseremoveGroupMember();
+    const message = createBaseRemoveGroupMemberResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1389,11 +1393,11 @@ export const removeGroupMember: MessageFns<removeGroupMember> = {
     return message;
   },
 
-  fromJSON(object: any): removeGroupMember {
+  fromJSON(object: any): RemoveGroupMemberResponse {
     return { result: isSet(object.result) ? globalThis.Boolean(object.result) : false };
   },
 
-  toJSON(message: removeGroupMember): unknown {
+  toJSON(message: RemoveGroupMemberResponse): unknown {
     const obj: any = {};
     if (message.result !== false) {
       obj.result = message.result;
@@ -1401,32 +1405,32 @@ export const removeGroupMember: MessageFns<removeGroupMember> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<removeGroupMember>, I>>(base?: I): removeGroupMember {
-    return removeGroupMember.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<RemoveGroupMemberResponse>, I>>(base?: I): RemoveGroupMemberResponse {
+    return RemoveGroupMemberResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<removeGroupMember>, I>>(object: I): removeGroupMember {
-    const message = createBaseremoveGroupMember();
+  fromPartial<I extends Exact<DeepPartial<RemoveGroupMemberResponse>, I>>(object: I): RemoveGroupMemberResponse {
+    const message = createBaseRemoveGroupMemberResponse();
     message.result = object.result ?? false;
     return message;
   },
 };
 
-function createBasesleepNotification(): sleepNotification {
+function createBaseSleepNotificationResponse(): SleepNotificationResponse {
   return { result: false };
 }
 
-export const sleepNotification: MessageFns<sleepNotification> = {
-  encode(message: sleepNotification, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const SleepNotificationResponse: MessageFns<SleepNotificationResponse> = {
+  encode(message: SleepNotificationResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.result !== false) {
       writer.uint32(8).bool(message.result);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): sleepNotification {
+  decode(input: BinaryReader | Uint8Array, length?: number): SleepNotificationResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBasesleepNotification();
+    const message = createBaseSleepNotificationResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1447,11 +1451,11 @@ export const sleepNotification: MessageFns<sleepNotification> = {
     return message;
   },
 
-  fromJSON(object: any): sleepNotification {
+  fromJSON(object: any): SleepNotificationResponse {
     return { result: isSet(object.result) ? globalThis.Boolean(object.result) : false };
   },
 
-  toJSON(message: sleepNotification): unknown {
+  toJSON(message: SleepNotificationResponse): unknown {
     const obj: any = {};
     if (message.result !== false) {
       obj.result = message.result;
@@ -1459,11 +1463,11 @@ export const sleepNotification: MessageFns<sleepNotification> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<sleepNotification>, I>>(base?: I): sleepNotification {
-    return sleepNotification.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<SleepNotificationResponse>, I>>(base?: I): SleepNotificationResponse {
+    return SleepNotificationResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<sleepNotification>, I>>(object: I): sleepNotification {
-    const message = createBasesleepNotification();
+  fromPartial<I extends Exact<DeepPartial<SleepNotificationResponse>, I>>(object: I): SleepNotificationResponse {
+    const message = createBaseSleepNotificationResponse();
     message.result = object.result ?? false;
     return message;
   },
@@ -1826,8 +1830,9 @@ export const NotificationServiceService = {
     requestSerialize: (value: GetUserNotificationsRequest) =>
       Buffer.from(GetUserNotificationsRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => GetUserNotificationsRequest.decode(value),
-    responseSerialize: (value: getUserNotifications) => Buffer.from(getUserNotifications.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => getUserNotifications.decode(value),
+    responseSerialize: (value: GetUserNotificationsResponse) =>
+      Buffer.from(GetUserNotificationsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetUserNotificationsResponse.decode(value),
   },
   getGroupMembers: {
     path: "/notification.NotificationService/GetGroupMembers",
@@ -1835,8 +1840,8 @@ export const NotificationServiceService = {
     responseStream: false,
     requestSerialize: (value: GetGroupMembersRequest) => Buffer.from(GetGroupMembersRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => GetGroupMembersRequest.decode(value),
-    responseSerialize: (value: getGroupMembers) => Buffer.from(getGroupMembers.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => getGroupMembers.decode(value),
+    responseSerialize: (value: GetGroupMembersResponse) => Buffer.from(GetGroupMembersResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetGroupMembersResponse.decode(value),
   },
   getGroupNotifications: {
     path: "/notification.NotificationService/GetGroupNotifications",
@@ -1845,8 +1850,9 @@ export const NotificationServiceService = {
     requestSerialize: (value: GetGroupNotificationsRequest) =>
       Buffer.from(GetGroupNotificationsRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => GetGroupNotificationsRequest.decode(value),
-    responseSerialize: (value: getGroupNotifications) => Buffer.from(getGroupNotifications.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => getGroupNotifications.decode(value),
+    responseSerialize: (value: GetGroupNotificationsResponse) =>
+      Buffer.from(GetGroupNotificationsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetGroupNotificationsResponse.decode(value),
   },
   sendNotification: {
     path: "/notification.NotificationService/SendNotification",
@@ -1854,8 +1860,9 @@ export const NotificationServiceService = {
     responseStream: false,
     requestSerialize: (value: SendNotificationRequest) => Buffer.from(SendNotificationRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => SendNotificationRequest.decode(value),
-    responseSerialize: (value: sendNotification) => Buffer.from(sendNotification.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => sendNotification.decode(value),
+    responseSerialize: (value: SendNotificationResponse) =>
+      Buffer.from(SendNotificationResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => SendNotificationResponse.decode(value),
   },
   sendGroupNotification: {
     path: "/notification.NotificationService/SendGroupNotification",
@@ -1864,8 +1871,9 @@ export const NotificationServiceService = {
     requestSerialize: (value: SendGroupNotificationRequest) =>
       Buffer.from(SendGroupNotificationRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => SendGroupNotificationRequest.decode(value),
-    responseSerialize: (value: sendGroupNotification) => Buffer.from(sendGroupNotification.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => sendGroupNotification.decode(value),
+    responseSerialize: (value: SendGroupNotificationResponse) =>
+      Buffer.from(SendGroupNotificationResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => SendGroupNotificationResponse.decode(value),
   },
   addGroupMember: {
     path: "/notification.NotificationService/AddGroupMember",
@@ -1873,8 +1881,8 @@ export const NotificationServiceService = {
     responseStream: false,
     requestSerialize: (value: GroupMemberRequest) => Buffer.from(GroupMemberRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => GroupMemberRequest.decode(value),
-    responseSerialize: (value: addGroupMember) => Buffer.from(addGroupMember.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => addGroupMember.decode(value),
+    responseSerialize: (value: AddGroupMemberResponse) => Buffer.from(AddGroupMemberResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => AddGroupMemberResponse.decode(value),
   },
   createGroup: {
     path: "/notification.NotificationService/CreateGroup",
@@ -1882,8 +1890,8 @@ export const NotificationServiceService = {
     responseStream: false,
     requestSerialize: (value: CreateGroupRequest) => Buffer.from(CreateGroupRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => CreateGroupRequest.decode(value),
-    responseSerialize: (value: createGroup) => Buffer.from(createGroup.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => createGroup.decode(value),
+    responseSerialize: (value: CreateGroupResponse) => Buffer.from(CreateGroupResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => CreateGroupResponse.decode(value),
   },
   removeGroupMember: {
     path: "/notification.NotificationService/RemoveGroupMember",
@@ -1891,8 +1899,9 @@ export const NotificationServiceService = {
     responseStream: false,
     requestSerialize: (value: GroupMemberRequest) => Buffer.from(GroupMemberRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => GroupMemberRequest.decode(value),
-    responseSerialize: (value: removeGroupMember) => Buffer.from(removeGroupMember.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => removeGroupMember.decode(value),
+    responseSerialize: (value: RemoveGroupMemberResponse) =>
+      Buffer.from(RemoveGroupMemberResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => RemoveGroupMemberResponse.decode(value),
   },
   sleepNotification: {
     path: "/notification.NotificationService/SleepNotification",
@@ -1900,8 +1909,9 @@ export const NotificationServiceService = {
     responseStream: false,
     requestSerialize: (value: SleepNotificationRequest) => Buffer.from(SleepNotificationRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => SleepNotificationRequest.decode(value),
-    responseSerialize: (value: sleepNotification) => Buffer.from(sleepNotification.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => sleepNotification.decode(value),
+    responseSerialize: (value: SleepNotificationResponse) =>
+      Buffer.from(SleepNotificationResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => SleepNotificationResponse.decode(value),
   },
   subscribeToUserNotifications: {
     path: "/notification.NotificationService/SubscribeToUserNotifications",
@@ -1925,15 +1935,15 @@ export const NotificationServiceService = {
 } as const;
 
 export interface NotificationServiceServer extends UntypedServiceImplementation {
-  getUserNotifications: handleUnaryCall<GetUserNotificationsRequest, getUserNotifications>;
-  getGroupMembers: handleUnaryCall<GetGroupMembersRequest, getGroupMembers>;
-  getGroupNotifications: handleUnaryCall<GetGroupNotificationsRequest, getGroupNotifications>;
-  sendNotification: handleUnaryCall<SendNotificationRequest, sendNotification>;
-  sendGroupNotification: handleUnaryCall<SendGroupNotificationRequest, sendGroupNotification>;
-  addGroupMember: handleUnaryCall<GroupMemberRequest, addGroupMember>;
-  createGroup: handleUnaryCall<CreateGroupRequest, createGroup>;
-  removeGroupMember: handleUnaryCall<GroupMemberRequest, removeGroupMember>;
-  sleepNotification: handleUnaryCall<SleepNotificationRequest, sleepNotification>;
+  getUserNotifications: handleUnaryCall<GetUserNotificationsRequest, GetUserNotificationsResponse>;
+  getGroupMembers: handleUnaryCall<GetGroupMembersRequest, GetGroupMembersResponse>;
+  getGroupNotifications: handleUnaryCall<GetGroupNotificationsRequest, GetGroupNotificationsResponse>;
+  sendNotification: handleUnaryCall<SendNotificationRequest, SendNotificationResponse>;
+  sendGroupNotification: handleUnaryCall<SendGroupNotificationRequest, SendGroupNotificationResponse>;
+  addGroupMember: handleUnaryCall<GroupMemberRequest, AddGroupMemberResponse>;
+  createGroup: handleUnaryCall<CreateGroupRequest, CreateGroupResponse>;
+  removeGroupMember: handleUnaryCall<GroupMemberRequest, RemoveGroupMemberResponse>;
+  sleepNotification: handleUnaryCall<SleepNotificationRequest, SleepNotificationResponse>;
   subscribeToUserNotifications: handleServerStreamingCall<UserRequest, Notification>;
   subscribeToGroupNotifications: handleServerStreamingCall<GroupNotificationsRequest, Notification>;
 }
@@ -1941,138 +1951,138 @@ export interface NotificationServiceServer extends UntypedServiceImplementation 
 export interface NotificationServiceClient extends Client {
   getUserNotifications(
     request: GetUserNotificationsRequest,
-    callback: (error: ServiceError | null, response: getUserNotifications) => void,
+    callback: (error: ServiceError | null, response: GetUserNotificationsResponse) => void,
   ): ClientUnaryCall;
   getUserNotifications(
     request: GetUserNotificationsRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: getUserNotifications) => void,
+    callback: (error: ServiceError | null, response: GetUserNotificationsResponse) => void,
   ): ClientUnaryCall;
   getUserNotifications(
     request: GetUserNotificationsRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: getUserNotifications) => void,
+    callback: (error: ServiceError | null, response: GetUserNotificationsResponse) => void,
   ): ClientUnaryCall;
   getGroupMembers(
     request: GetGroupMembersRequest,
-    callback: (error: ServiceError | null, response: getGroupMembers) => void,
-  ): ClientUnaryCall;
-  getGroupMembers(
-    request: GetGroupMembersRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: getGroupMembers) => void,
+    callback: (error: ServiceError | null, response: GetGroupMembersResponse) => void,
   ): ClientUnaryCall;
   getGroupMembers(
     request: GetGroupMembersRequest,
     metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetGroupMembersResponse) => void,
+  ): ClientUnaryCall;
+  getGroupMembers(
+    request: GetGroupMembersRequest,
+    metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: getGroupMembers) => void,
+    callback: (error: ServiceError | null, response: GetGroupMembersResponse) => void,
   ): ClientUnaryCall;
   getGroupNotifications(
     request: GetGroupNotificationsRequest,
-    callback: (error: ServiceError | null, response: getGroupNotifications) => void,
+    callback: (error: ServiceError | null, response: GetGroupNotificationsResponse) => void,
   ): ClientUnaryCall;
   getGroupNotifications(
     request: GetGroupNotificationsRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: getGroupNotifications) => void,
+    callback: (error: ServiceError | null, response: GetGroupNotificationsResponse) => void,
   ): ClientUnaryCall;
   getGroupNotifications(
     request: GetGroupNotificationsRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: getGroupNotifications) => void,
+    callback: (error: ServiceError | null, response: GetGroupNotificationsResponse) => void,
   ): ClientUnaryCall;
   sendNotification(
     request: SendNotificationRequest,
-    callback: (error: ServiceError | null, response: sendNotification) => void,
-  ): ClientUnaryCall;
-  sendNotification(
-    request: SendNotificationRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: sendNotification) => void,
+    callback: (error: ServiceError | null, response: SendNotificationResponse) => void,
   ): ClientUnaryCall;
   sendNotification(
     request: SendNotificationRequest,
     metadata: Metadata,
+    callback: (error: ServiceError | null, response: SendNotificationResponse) => void,
+  ): ClientUnaryCall;
+  sendNotification(
+    request: SendNotificationRequest,
+    metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: sendNotification) => void,
+    callback: (error: ServiceError | null, response: SendNotificationResponse) => void,
   ): ClientUnaryCall;
   sendGroupNotification(
     request: SendGroupNotificationRequest,
-    callback: (error: ServiceError | null, response: sendGroupNotification) => void,
+    callback: (error: ServiceError | null, response: SendGroupNotificationResponse) => void,
   ): ClientUnaryCall;
   sendGroupNotification(
     request: SendGroupNotificationRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: sendGroupNotification) => void,
+    callback: (error: ServiceError | null, response: SendGroupNotificationResponse) => void,
   ): ClientUnaryCall;
   sendGroupNotification(
     request: SendGroupNotificationRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: sendGroupNotification) => void,
+    callback: (error: ServiceError | null, response: SendGroupNotificationResponse) => void,
   ): ClientUnaryCall;
   addGroupMember(
     request: GroupMemberRequest,
-    callback: (error: ServiceError | null, response: addGroupMember) => void,
-  ): ClientUnaryCall;
-  addGroupMember(
-    request: GroupMemberRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: addGroupMember) => void,
+    callback: (error: ServiceError | null, response: AddGroupMemberResponse) => void,
   ): ClientUnaryCall;
   addGroupMember(
     request: GroupMemberRequest,
     metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: addGroupMember) => void,
+    callback: (error: ServiceError | null, response: AddGroupMemberResponse) => void,
   ): ClientUnaryCall;
-  createGroup(
-    request: CreateGroupRequest,
-    callback: (error: ServiceError | null, response: createGroup) => void,
-  ): ClientUnaryCall;
-  createGroup(
-    request: CreateGroupRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: createGroup) => void,
-  ): ClientUnaryCall;
-  createGroup(
-    request: CreateGroupRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: createGroup) => void,
-  ): ClientUnaryCall;
-  removeGroupMember(
-    request: GroupMemberRequest,
-    callback: (error: ServiceError | null, response: removeGroupMember) => void,
-  ): ClientUnaryCall;
-  removeGroupMember(
-    request: GroupMemberRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: removeGroupMember) => void,
-  ): ClientUnaryCall;
-  removeGroupMember(
+  addGroupMember(
     request: GroupMemberRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: removeGroupMember) => void,
+    callback: (error: ServiceError | null, response: AddGroupMemberResponse) => void,
+  ): ClientUnaryCall;
+  createGroup(
+    request: CreateGroupRequest,
+    callback: (error: ServiceError | null, response: CreateGroupResponse) => void,
+  ): ClientUnaryCall;
+  createGroup(
+    request: CreateGroupRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: CreateGroupResponse) => void,
+  ): ClientUnaryCall;
+  createGroup(
+    request: CreateGroupRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: CreateGroupResponse) => void,
+  ): ClientUnaryCall;
+  removeGroupMember(
+    request: GroupMemberRequest,
+    callback: (error: ServiceError | null, response: RemoveGroupMemberResponse) => void,
+  ): ClientUnaryCall;
+  removeGroupMember(
+    request: GroupMemberRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: RemoveGroupMemberResponse) => void,
+  ): ClientUnaryCall;
+  removeGroupMember(
+    request: GroupMemberRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: RemoveGroupMemberResponse) => void,
   ): ClientUnaryCall;
   sleepNotification(
     request: SleepNotificationRequest,
-    callback: (error: ServiceError | null, response: sleepNotification) => void,
+    callback: (error: ServiceError | null, response: SleepNotificationResponse) => void,
   ): ClientUnaryCall;
   sleepNotification(
     request: SleepNotificationRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: sleepNotification) => void,
+    callback: (error: ServiceError | null, response: SleepNotificationResponse) => void,
   ): ClientUnaryCall;
   sleepNotification(
     request: SleepNotificationRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: sleepNotification) => void,
+    callback: (error: ServiceError | null, response: SleepNotificationResponse) => void,
   ): ClientUnaryCall;
   subscribeToUserNotifications(
     request: UserRequest,

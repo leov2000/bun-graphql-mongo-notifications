@@ -154,8 +154,8 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
 
     sleepNotification: async (call, callback) => {
       try {
-        const { notificationID } = call.request;
-        const result = await mongoSleepNotification(notificationID, mongoClient);
+        const { notificationId } = call.request;
+        const result = await mongoSleepNotification(notificationId, mongoClient);
 
         callback(null, {
           result,
@@ -221,7 +221,7 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
                 call.write(notification);
               }
             }
-            if (tags.length === 0 && broadcastTags.length === 0) {
+            if ((tags.length === 0 && broadcastTags.length === 0) || tags.length === 0) {
               call.write(notification);
             }
           } catch (error) {
