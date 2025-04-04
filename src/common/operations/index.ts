@@ -19,7 +19,7 @@ export const mongoGetGroupNotifications = async (
     query.tags = { $in: tags };
   }
 
-  return await groupNotificationsCollection
+  return (await groupNotificationsCollection
     .aggregate([
       { $match: query },
       {
@@ -28,7 +28,7 @@ export const mongoGetGroupNotifications = async (
         },
       },
     ])
-    .toArray() as Notification[]
+    .toArray()) as Notification[];
 };
 
 export const mongoGetUserNotifications = async (
@@ -46,7 +46,7 @@ export const mongoGetUserNotifications = async (
   } else {
     query.sleep = false;
   }
-  return await userNotificationsCollection
+  return (await userNotificationsCollection
     .aggregate([
       { $match: query },
       {
@@ -55,7 +55,7 @@ export const mongoGetUserNotifications = async (
         },
       },
     ])
-    .toArray() as Notification[]
+    .toArray()) as Notification[];
 };
 
 export const mongoGetGroupMembers = async (groupName: string, mongoClient: AppMongoClient) => {
@@ -274,7 +274,7 @@ export async function* userNotifications(user: string) {
   }
 }
 
-export async function* groupNotifications(groupName: string, tags: string[]) {
+export async function* groupNotifications(groupName: string, tags: string[] = []) {
   const groupChannel = new BroadcastChannel(`groupName:${groupName}`);
   let messageResolver: ((value: BroadcastNotification) => void) | null = null;
 
@@ -290,7 +290,7 @@ export async function* groupNotifications(groupName: string, tags: string[]) {
       const message: BroadcastNotification = await new Promise<BroadcastNotification>((value) => {
         messageResolver = value;
       });
-      const { broadcastTags, notification } = message;
+      const { broadcastTags = [], notification } = message;
 
       if (broadcastTags && broadcastTags.length > 0) {
         const intersectionSet = new Set(tags).intersection(new Set(broadcastTags));
@@ -298,9 +298,9 @@ export async function* groupNotifications(groupName: string, tags: string[]) {
         if (intersectionSet.size > 0) {
           yield notification;
         }
-        if (!tags && !broadcastTags) {
-          yield notification;
-        }
+      }
+      if (tags.length === 0 && broadcastTags.length === 0) {
+        yield notification;
       }
     }
   } catch (error) {

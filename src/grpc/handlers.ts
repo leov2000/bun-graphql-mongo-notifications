@@ -211,7 +211,7 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
 
         groupChannel.onmessage = (event: MessageEvent) => {
           try {
-            const { broadcastTags, notification } = event.data;
+            const { broadcastTags = [], notification } = event.data;
 
             if (broadcastTags && broadcastTags.length > 0) {
               const intersectionSet = new Set(tags).intersection(new Set(broadcastTags));
@@ -220,9 +220,9 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
               if (intersectionSet.size > 0) {
                 call.write(notification);
               }
-              if (!tags && !broadcastTags) {
-                call.write(notification);
-              }
+            }
+            if (tags.length === 0 && broadcastTags.length === 0) {
+              call.write(notification);
             }
           } catch (error) {
             console.error(`Error writing to stream for group ${groupName}:`, error);
