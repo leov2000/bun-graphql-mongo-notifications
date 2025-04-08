@@ -6,6 +6,9 @@ import { TTLOptions } from '../../graphql/resolvers/types';
 import parse from 'parse-duration';
 import { AppMongoClient } from '../../mongodb/mongo-client';
 import { NotificationDocuments, UserGroupDocuments } from '../../mongodb/types';
+import {
+  TTLOptions as ProtoBufTTLOptions,
+} from '../../grpc/proto/generated/notifications';
 
 export const parseApplicationConfig = async (): Promise<ApplicationConfig> => {
   const { values } = parseArgs({
@@ -40,6 +43,14 @@ export const parseApplicationConfig = async (): Promise<ApplicationConfig> => {
   }
   return config;
 };
+
+export function mapTTLOptions(protoOpts: ProtoBufTTLOptions): TTLOptions {
+  return {
+    mins: protoOpts.mins?.value,
+    hours: protoOpts.hours?.value,
+    days: protoOpts.days?.value,
+  };
+}
 
 export const getExpireAtValue = (ttl: TTLOptions): Date => {
   let ttlValue: string;

@@ -1,6 +1,7 @@
 syntax = "proto3";
 package notification;
 import "google/protobuf/wrappers.proto";
+
 service NotificationService {
   rpc GetUserNotifications (GetUserNotificationsRequest) returns (GetUserNotificationsResponse);
   rpc GetGroupMembers (GetGroupMembersRequest) returns (GetGroupMembersResponse);
@@ -21,19 +22,23 @@ message GetUserNotificationsRequest {
   string user = 1;
   bool sleep = 2;
 }
+
 message GetGroupMembersRequest {
   string group_name = 1;
 }
+
 message GetGroupNotificationsRequest {
   string group_name = 1;
   repeated string tags = 2;
 }
+
 message SendNotificationRequest {
   string to_user = 1;
   string from_user = 2;
   string payload = 3;
   TTLOptions ttl = 4;
 }
+
 message SendGroupNotificationRequest {
   string group_name = 1;
   string from_user = 2;
@@ -41,21 +46,26 @@ message SendGroupNotificationRequest {
   repeated string tags = 4;
   TTLOptions ttl = 5;
 }
+
 message GroupMemberRequest {
   string user = 1;
   string group_name = 2;
 }
+
 message CreateGroupRequest {
   string group_name = 1;
   repeated string users = 2;
 }
+
 message SleepNotificationRequest {
   string notification_id = 1;
   bool sleep = 2;
 }
+
 message UserRequest {
   string user = 1;
 }
+
 message GroupNotificationsRequest {
   string group_name = 1;
   repeated string tags = 2;
@@ -64,9 +74,11 @@ message GroupNotificationsRequest {
 message GetUserNotificationsResponse {
   repeated Notification notifications = 1;
 }
+
 message GetGroupMembersResponse {
   repeated string users = 1;
 }
+
 message GetGroupNotificationsResponse {
   repeated Notification notifications = 1;
 }
@@ -74,18 +86,23 @@ message GetGroupNotificationsResponse {
 message SendNotificationResponse {
   bool result = 1;
 }
+
 message SendGroupNotificationResponse {
   bool result = 1;
 }
+
 message AddGroupMemberResponse {
   bool result = 1;
 }
+
 message CreateGroupResponse {
   bool result = 1;
 }
+
 message RemoveGroupMemberResponse {
   bool result = 1;
 }
+
 message SleepNotificationResponse {
   bool result = 1;
 }
@@ -101,11 +118,13 @@ message Notification {
   google.protobuf.DoubleValue expire_at = 8;
   string created_at = 9;
 }
+
 message TTLOptions {
   google.protobuf.Int32Value mins = 1;
   google.protobuf.Int32Value hours = 2;
   google.protobuf.Int32Value days = 3;
 }
+
 message UserGroup {
   repeated string users = 1;
 }

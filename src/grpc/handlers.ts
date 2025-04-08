@@ -1,5 +1,6 @@
 import * as grpc from '@grpc/grpc-js';
-import { NotificationServiceServer, Notification } from './proto/generated/notifications';
+import { INotificationService } from './proto/generated/notifications.grpc-server';
+import { Notification, TTLOptions as ProtoBufTTLOptions } from './proto/generated/notifications';
 import { AppMongoClient } from '../mongodb/mongo-client';
 import {
   mongoAddGroupMember,
@@ -12,8 +13,9 @@ import {
   mongoSendNotification,
   mongoSleepNotification,
 } from '../common/operations/index';
+import { mapTTLOptions } from '../common/utils';
 
-export const notificationServiceImpl = (mongoClient: AppMongoClient): NotificationServiceServer => {
+export const notificationServiceImpl = (mongoClient: AppMongoClient): INotificationService => {
   return {
     getUserNotifications: async (call, callback) => {
       try {
@@ -68,7 +70,13 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
     sendNotification: async (call, callback) => {
       try {
         const { toUser, fromUser, payload, ttl } = call.request;
-        const result = await mongoSendNotification(toUser, fromUser, payload, ttl, mongoClient);
+        const result = await mongoSendNotification(
+          toUser,
+          fromUser,
+          payload,
+          mapTTLOptions(ttl as ProtoBufTTLOptions),
+          mongoClient,
+        );
 
         callback(null, {
           result,
@@ -89,7 +97,7 @@ export const notificationServiceImpl = (mongoClient: AppMongoClient): Notificati
           fromUser,
           payload,
           tags,
-          ttl,
+          mapTTLOptions(ttl as ProtoBufTTLOptions),
           mongoClient,
         );
 

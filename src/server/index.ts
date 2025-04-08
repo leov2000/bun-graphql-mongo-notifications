@@ -4,6 +4,7 @@ import { bootstrapYoga, schema } from '../graphql/schema';
 import { createWebsocketHandler } from '../graphql/ws';
 import { mongoSingletonClient, parseApplicationConfig } from '../common/utils';
 import { initializeGrpcServer } from '../grpc/server';
+import { mongoDBHealthCheckRequest } from '../mongodb/mongo-health-check';
 
 (async (): Promise<void> => {
   const appConfig = await parseApplicationConfig();
@@ -26,6 +27,10 @@ import { initializeGrpcServer } from '../grpc/server';
 
         const url = new URL(request.url);
 
+        if (url.pathname === '/health') {
+          return await mongoDBHealthCheckRequest(mongoClient);
+        }
+
         if (
           url.pathname === appConfig.altair.altairEndpointURL ||
           url.pathname.startsWith(appConfig.altair.altairBaseURL)
@@ -44,6 +49,7 @@ import { initializeGrpcServer } from '../grpc/server';
       Server running at http://${appConfig.server.hostname}:${appConfig.server.port}
       GraphQL endpoint: http://${appConfig.server.hostname}:${appConfig.server.port}${appConfig.altair.graphQLEndpointURL}
       Altair GraphQL client: http://${appConfig.server.hostname}:${appConfig.server.port}${appConfig.altair.altairEndpointURL}
+      Health endpoint: http://${appConfig.server.hostname}:${appConfig.server.port}/health
     `);
   } catch (error) {
     console.log(`An exception has occurred while attempting to start Bun.serve ${error}`);
