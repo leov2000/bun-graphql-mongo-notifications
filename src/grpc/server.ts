@@ -1,5 +1,5 @@
 import * as grpc from '@grpc/grpc-js';
-import { NotificationServiceService } from './proto/generated/notifications';
+import { notificationServiceDefinition } from './proto/generated/notifications.grpc-server';
 import { notificationServiceImpl } from './handlers';
 import { AppMongoClient } from '../mongodb/mongo-client';
 import * as protoLoader from '@grpc/proto-loader';
@@ -14,8 +14,8 @@ export async function initializeGrpcServer(
   const PROTO_PATHS = path.join(__dirname, '../grpc/proto/notifications.proto');
   const packageDefinition = protoLoader.loadSync(PROTO_PATHS);
   const reflectionService = new reflection.ReflectionService(packageDefinition);
-  
-  server.addService(NotificationServiceService, notificationServiceImpl(mongoClient));
+
+  server.addService(notificationServiceDefinition, notificationServiceImpl(mongoClient));
   reflectionService.addToServer(server);
 
   await new Promise<number>((resolve, reject) => {
